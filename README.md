@@ -32,7 +32,7 @@ Designed to meet the core requirements of the Cloud Computing Midterm Project.
 
 ## Usage
 
-1. Open your browser → `https://mycarlogger.<YOUR_IP>.nip.io`
+1. Open your browser → `https://mycarlogger.<Will update with IP later>.nip.io`
 2. Add new maintenance entries via the web form
 3. View all entries in the dashboard
 4. Reboot server → systemd auto-starts the app → entries remain intact
@@ -47,9 +47,3 @@ Designed to meet the core requirements of the Cloud Computing Midterm Project.
 3. Reboot server → app auto-starts  
 4. Refresh dashboard → data persists  
 5. Push code change → GitHub Actions auto-deploys  
-
----
-
-## License
-
-MIT License
