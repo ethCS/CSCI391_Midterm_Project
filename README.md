@@ -1,10 +1,7 @@
-# CSCI391_Midterm_Project
-Midterm project for CSCI391 (Cloud Computing)
-
 # Car Maintenance Logger
 
 A simple cloud-native web application to log and track car maintenance tasks.  
-Designed to be **easy to deploy**, **secure**, and **resilient** on Jetstream2 while demonstrating DevOps best practices.
+Designed to meet the core requirements of the Cloud Computing Midterm Project.
 
 ---
 
@@ -20,16 +17,39 @@ Designed to be **easy to deploy**, **secure**, and **resilient** on Jetstream2 w
   - Notes (optional)
   - Date (auto-filled by default)
 - View all maintenance logs in a clean, list format
-- Filter by car or component (optional enhancement)
-- Persistent storage across server reboots
+- Entries persist across server reboots
 
 ---
 
-## Tech Stack
+## Core Project Requirements Covered
 
-- **Python + Flask** – Lightweight web framework  
-- **SQLite** – Single-file database, stored on mounted volume for persistence  
-- **Gunicorn** – WSGI server for Flask  
-- **Caddy** – Reverse proxy with HTTPS (via nip.io)  
-- **systemd** – Ensures app runs continuously and auto-starts on reboot  
-- **GitHub Actions** – Automates CI/CD deployment  
+- **Secured Perimeter:** Only required ports are open (SSH, HTTP, HTTPS)  
+- **GitOps Automation:** Push to `main` triggers CI/CD deployment via GitHub Actions  
+- **Multi-Tenant Routing & SSL:** App served securely over HTTPS using Caddy and accessible via `nip.io` subdomain  
+- **Resilience:** systemd ensures app runs continuously and database persists across reboots  
+
+---
+
+## Usage
+
+1. Open your browser → `https://mycarlogger.<YOUR_IP>.nip.io`
+2. Add new maintenance entries via the web form
+3. View all entries in the dashboard
+4. Reboot server → systemd auto-starts the app → entries remain intact
+5. Push code updates → GitHub Actions auto-deploys changes to the live server
+
+---
+
+## Demo Workflow for Presentation
+
+1. Add a maintenance entry  
+2. Show entries on dashboard  
+3. Reboot server → app auto-starts  
+4. Refresh dashboard → data persists  
+5. Push code change → GitHub Actions auto-deploys  
+
+---
+
+## License
+
+MIT License
