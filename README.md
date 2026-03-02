@@ -1,7 +1,6 @@
 # Car Maintenance Logger
 
 A simple cloud-native web application to log and track car maintenance tasks.  
-Designed to meet the core requirements of the Cloud Computing Midterm Project.
 
 ---
 
@@ -37,13 +36,3 @@ Designed to meet the core requirements of the Cloud Computing Midterm Project.
 3. View all entries in the dashboard
 4. Reboot server → systemd auto-starts the app → entries remain intact
 5. Push code updates → GitHub Actions auto-deploys changes to the live server
-
----
-
-## Demo Workflow for Presentation
-
-1. Add a maintenance entry  
-2. Show entries on dashboard  
-3. Reboot server → app auto-starts  
-4. Refresh dashboard → data persists  
-5. Push code change → GitHub Actions auto-deploys  
