@@ -4,6 +4,7 @@ from datetime import datetime
 import sqlite3
 import os
 
+
 # === App instance ===
 app = FastAPI(title="Car Maintenance Logger")
 
