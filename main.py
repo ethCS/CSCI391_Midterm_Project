@@ -1,18 +1,16 @@
 from fastapi import FastAPI, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from datetime import datetime
 import sqlite3
 import os
 
-
-# === App instance ===
 app = FastAPI(title="Car Maintenance Logger")
 
 # === Database path ===
-DB_PATH = "/media/volume/car-data/carlogger.db"  # change later if volume is different
+DB_PATH = "/media/volume/car-data/carlogger.db"
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-# Create table if it doesn't exist
+# === Create table if it doesn't exist ===
 conn = sqlite3.connect(DB_PATH)
 conn.execute("""
 CREATE TABLE IF NOT EXISTS maintenance_logs (
@@ -30,37 +28,115 @@ CREATE TABLE IF NOT EXISTS maintenance_logs (
 conn.commit()
 conn.close()
 
-# === Routes ===
+
+# === HOME PAGE ===
 @app.get("/", response_class=HTMLResponse)
 def home():
-    # Display all maintenance logs in a simple HTML table
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.execute("SELECT * FROM maintenance_logs ORDER BY date DESC")
     rows = cursor.fetchall()
     conn.close()
 
-    html = "<h1>Car Maintenance Logs</h1>"
-    html += "<table border='1'><tr><th>ID</th><th>Owner</th><th>Make</th><th>Model</th><th>Year</th><th>Service</th><th>Mileage</th><th>Notes</th><th>Date</th></tr>"
-    for row in rows:
-        html += "<tr>" + "".join(f"<td>{item}</td>" for item in row) + "</tr>"
-    html += "</table>"
+    html = """
+    <html>
+    <head>
+        <title>Car Maintenance Logger</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
 
-    # Simple form to add new entries
-    html += """
-    <h2>Add New Entry</h2>
-    <form action="/add" method="post">
-        Owner Name: <input name="owner_name"><br>
-        Car Make: <input name="make"><br>
-        Car Model: <input name="model"><br>
-        Year: <input name="year" type="number"><br>
-        Service/Component: <input name="service"><br>
-        Mileage: <input name="mileage" type="number"><br>
-        Notes: <input name="notes"><br>
-        <button type="submit">Add Entry</button>
-    </form>
+    <body class="bg-dark text-light">
+    <div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Car Maintenance Logs</h1>
+        <a href="/" class="btn btn-secondary">Home</a>
+    </div>
+
+    <table class="table table-dark table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Owner</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Service</th>
+            <th>Mileage</th>
+            <th>Notes</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
     """
+
+    for row in rows:
+        html += "<tr>"
+        for item in row:
+            html += f"<td>{item}</td>"
+
+        html += f"""
+        <td>
+            <form action="/delete/{row[0]}" method="post">
+                <button class="btn btn-danger btn-sm">Delete</button>
+            </form>
+        </td>
+        """
+        html += "</tr>"
+
+    html += """
+    </tbody>
+    </table>
+
+    <div class="card bg-secondary p-3 mt-4">
+    <h3>Add New Entry</h3>
+
+    <form action="/add" method="post">
+
+    <div class="row">
+        <div class="col">
+            <input class="form-control mb-2" name="owner_name" placeholder="Owner Name" required>
+        </div>
+
+        <div class="col">
+            <input class="form-control mb-2" name="make" placeholder="Car Make" required>
+        </div>
+
+        <div class="col">
+            <input class="form-control mb-2" name="model" placeholder="Car Model" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <input class="form-control mb-2" name="year" type="number" placeholder="Year" required>
+        </div>
+
+        <div class="col">
+            <input class="form-control mb-2" name="service" placeholder="Service / Component" required>
+        </div>
+
+        <div class="col">
+            <input class="form-control mb-2" name="mileage" type="number" placeholder="Mileage" required>
+        </div>
+    </div>
+
+    <input class="form-control mb-2" name="notes" placeholder="Notes (optional)">
+
+    <button class="btn btn-primary">Add Entry</button>
+
+    </form>
+    </div>
+
+    </div>
+    </body>
+    </html>
+    """
+
     return html
 
+
+# === ADD ENTRY ===
 @app.post("/add")
 def add_entry(
     owner_name: str = Form(...),
@@ -72,6 +148,7 @@ def add_entry(
     notes: str = Form("")
 ):
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
         "INSERT INTO maintenance_logs (owner_name, make, model, year, service, mileage, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -79,4 +156,17 @@ def add_entry(
     )
     conn.commit()
     conn.close()
-    return {"message": "Entry added successfully!"}
+
+    return RedirectResponse("/", status_code=303)
+
+
+# === DELETE ENTRY ===
+@app.post("/delete/{entry_id}")
+def delete_entry(entry_id: int):
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM maintenance_logs WHERE id=?", (entry_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse("/", status_code=303)
