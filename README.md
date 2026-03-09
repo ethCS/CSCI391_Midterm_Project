@@ -31,7 +31,7 @@ A simple cloud-native web application to log and track car maintenance tasks.
 
 ## Usage
 
-1. Open your browser → `https://mycarlogger.<Will update with IP later>.nip.io`
+1. Open your browser → "https://149.165.169.156.nip.io/"
 2. Add new maintenance entries via the web form
 3. View all entries in the dashboard
 4. Reboot server → systemd auto-starts the app → entries remain intact
