@@ -10,7 +10,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 app = FastAPI(title="Car Maintenance Logger")
 
 APP_DIR = Path(__file__).resolve().parent
-DB_PATH = os.getenv("CAR_LOGGER_DB_PATH", str(APP_DIR / "carlogger.db"))
+LEGACY_DB_PATH = Path("/media/volume/car-data/carlogger.db")
+DEFAULT_DB_PATH = LEGACY_DB_PATH if LEGACY_DB_PATH.exists() else APP_DIR / "carlogger.db"
+DB_PATH = os.getenv("CAR_LOGGER_DB_PATH", str(DEFAULT_DB_PATH))
 Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
 
 ROSE_PINE_CSS = """
@@ -479,8 +481,8 @@ def home():
     <section class="hero-card">
         <div>
             <p class="eyebrow">Ethan Elliott's</p>
-            <h1>Car Maintenance Logger</h1>
-            <p class="hero-subtitle">Track every service visit, mileage milestone, and repair note in a polished dark dashboard.</p>
+            <h1>Vehicle Maintenance Logger</h1>
+            <p class="hero-subtitle">Track every service visit, mileage milestone, and repair note.</p>
         </div>
         <div class="hero-actions">
             <a class="button primary" href="#new-entry">+ Add New Entry</a>
